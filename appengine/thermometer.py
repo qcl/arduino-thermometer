@@ -21,9 +21,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 class DHTRecord(ndb.Model):
     temperature = ndb.FloatProperty()
     humidity    = ndb.FloatProperty()
-    date        = ndb.DateTimeProperty(auto_now_add=True)
-
-
+    date        = ndb.DateTimeProperty()
 
 #
 class MainPage(webapp2.RequestHandler):
@@ -50,14 +48,12 @@ class Current(webapp2.RequestHandler):
                     "date":"2014-09-26"
                 }
 
-        toCST = timedelta(hours=8)
-
         if len(records) == 1:
             record = records[0]
 
             response["temperature"] = record.temperature
             response["humidity"] = record.humidity
-            response["date"] = (record.date + toCST).isoformat()
+            response["date"] = record.date.isoformat()
 
         self.response.write(json.dumps(response))
 
@@ -76,14 +72,17 @@ class Thermometer(webapp2.RequestHandler):
         temp = self.request.get('temp')
         humi = self.request.get('humi')
         device = self.request.get('device')
+        
 
-        #if len(temp) == 0 or len(humi) == 0 or len(device) == 0:
-        #    self.abort(403)
+        if len(temp) == 0 or len(humi) == 0 or len(device) == 0:
+            self.abort(403)
+        
+        toCST = timedelta(hours=8)
 
         temp = float(temp)
         humi = float(humi)
     
-        dht = DHTRecord(temperature=temp, humidity=humi)
+        dht = DHTRecord(temperature=temp, humidity=humi,date=datetime.now()+toCST)
         dht.put()
 
         self.response.write(temp)
