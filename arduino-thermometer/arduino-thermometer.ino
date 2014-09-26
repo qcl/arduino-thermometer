@@ -1,5 +1,5 @@
 /*
- *  QCL's Naive Weather Center
+ *  QCL's Arduino Thermometer
  *
  *  2014.09.26
  *  Qing-Cheng Li <qc.linux at gmail.com>
@@ -29,7 +29,7 @@ BufferFiller bfill;
 Stash stash;
 
 unsigned long timer = 0;
-unsigned long delay_time = 60000;  //update freq: 1 min
+unsigned long delay_time = 600000;  //update freq: 10 min
 unsigned long overflow_count = 0;
 boolean is_overflow = false;
 
@@ -57,7 +57,7 @@ static word homePage(){
         "Content-Type: text/html\n"
         "Pragma: no-cache\n"
         "\n"
-        "<!DOCTYPE html><html><head><title>qcl's Weather Center</title></head>"
+        "<!DOCTYPE html><html><head><title>qcl's Arduino Thermometer</title></head>"
         "<body><h1>qcl's Weather Center</h1><h1>$D C / $D %</h1>"
         "<p>Arduino UNO start time: $D:$D$D:$D$D</p>"
         "<p>Check more information on <a href='http://$F'>remote server</a></p></body>"),
