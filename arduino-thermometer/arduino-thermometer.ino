@@ -58,7 +58,7 @@ static word homePage(){
         "Pragma: no-cache\n"
         "\n"
         "<!DOCTYPE html><html><head><title>qcl's Arduino Thermometer</title></head>"
-        "<body><h1>qcl's Weather Center</h1><h1>$D C / $D %</h1>"
+        "<body><h1>qcl's Arduino Thermometer</h1><h1>$D C / $D %</h1>"
         "<p>Arduino UNO start time: $D:$D$D:$D$D</p>"
         "<p>Check more information on <a href='http://$F'>remote server</a></p></body>"),
         (int)DHT.temperature,(int)DHT.humidity,h,m/10,m%10,s/10,s%10,remote_server);
