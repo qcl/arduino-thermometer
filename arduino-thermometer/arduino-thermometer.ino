@@ -1,7 +1,7 @@
 /*
  *  QCL's Naive Weather Center
  *
- *  2014.09.24
+ *  2014.09.26
  *  Qing-Cheng Li <qc.linux at gmail.com>
  * 
  *  It's a Arduino test, use sensor and network module, 
