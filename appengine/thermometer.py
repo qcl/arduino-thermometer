@@ -18,26 +18,45 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+#
+#   Models
+#
+
 class DHTRecord(ndb.Model):
+    """Record the `temperature' and `humidity' in `date'
+        temperature : float
+        humidity    : float
+        date        : datetime.datetime
+    """
     temperature = ndb.FloatProperty()
     humidity    = ndb.FloatProperty()
     date        = ndb.DateTimeProperty()
 
+
+
+
 #
+#   Views
+#
+
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        temp = 30
-
         template_values = {
-            'temp':temp
         }
 
         template = JINJA_ENVIRONMENT.get_template("index.html")
 
         self.response.write(template.render(template_values))
 
+#
+#   APIs
+#
+
 class Current(webapp2.RequestHandler):
-    """Get current (latest) temperature and humidity."""
+    """Get current (latest) temperature and humidity.
+        GET 
+            return the latest DHTRecord as json
+    """
 
     def get(self):
         records = DHTRecord.query().order(-DHTRecord.date).fetch(1)
@@ -53,26 +72,50 @@ class Current(webapp2.RequestHandler):
 
             response["temperature"] = record.temperature
             response["humidity"] = record.humidity
-            response["date"] = record.date.isoformat()
+            response["date"] = record.date.isoformat(' ').split(".")[0]
 
+        self.response.headers["Access-Control-Allow-Origin"] = "*"
+        self.response.headers["Content-Type"] = "application/json"
         self.response.write(json.dumps(response))
 
-        
-
-#
 class Thermometer(webapp2.RequestHandler):
-    
-    #
-    def get(self):
-        # TODO
-        pass
+    """Get or update DHTRecords (temperature/humidity/date)    
+        GET 
+            limit   (default=30)
+                the number of returned records
 
-    # 
+        POST
+            temp    (required)
+                temperature
+            humi    (required)
+                humidity
+            device  (required)
+                this record is recorded by which device.
+    """
+    def get(self):
+        limit = int(self.request.get('limit',30))
+
+        if limit < 1:
+            self.abort(403)
+        
+        records = DHTRecord.query().order(-DHTRecord.date).fetch(limit)
+
+        response = []
+        for record in records:
+            response.append({
+                "temperature":record.temperature,
+                "humidity":record.humidity,
+                "date" : record.date.isoformat(' ').split(".")[0]
+                })
+
+        self.response.headers["Access-Control-Allow-Origin"] = "*"
+        self.response.headers["Content-Type"] = "application/json"
+        self.response.write(json.dumps(response))
+
     def post(self):
         temp = self.request.get('temp')
         humi = self.request.get('humi')
         device = self.request.get('device')
-        
 
         if len(temp) == 0 or len(humi) == 0 or len(device) == 0:
             self.abort(403)
@@ -89,6 +132,8 @@ class Thermometer(webapp2.RequestHandler):
         self.response.write(humi)
         self.response.write(device)
 
+#
+#   Google AppEngine webapp2 Application
 #
 application = webapp2.WSGIApplication([
     ('/',MainPage),
