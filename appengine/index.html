@@ -48,9 +48,9 @@ div.content{
 <hr />
 <div>
     <div class="thermometer">
-        <span class="temp" id="tempeature">30</span><span class="degree">°C</span>
+        <span class="temp" id="temperature">00</span><span class="degree">°C</span>
         <span class="humi">
-        <span id="humidity">65</span><span class="percent">%</span>
+        <span id="humidity">00</span><span class="percent">%</span>
         </span>
     </div>
 </div>
@@ -62,7 +62,7 @@ div.content{
 <script>
 $(function(){
 
-        var $t = $("#tempeature");
+        var $t = $("#temperature");
         var $h = $("#humidity");
         var $d = $("#update");
 
@@ -71,7 +71,7 @@ $(function(){
             method:"GET",
             success:function(dht){
                 console.log("call api /current success");
-                $t.html(dht.tempeature);
+                $t.html(dht.temperature);
                 $h.html(dht.humidity);
                 $d.html(dht.date);
             },
