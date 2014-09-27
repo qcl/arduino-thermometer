@@ -64,7 +64,7 @@ class Current(webapp2.RequestHandler):
         response = {
                     "temperature":0.0,
                     "humidity":0.0,
-                    "date":"2014-09-26"
+                    "date":"2014-09-26 12:34:56"
                 }
 
         if len(records) == 1:
