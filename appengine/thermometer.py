@@ -108,6 +108,8 @@ class Thermometer(webapp2.RequestHandler):
                 "date" : record.date.isoformat(' ').split(".")[0]
                 })
 
+        response.reverse()
+
         self.response.headers["Access-Control-Allow-Origin"] = "*"
         self.response.headers["Content-Type"] = "application/json"
         self.response.write(json.dumps(response))
