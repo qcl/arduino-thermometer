@@ -64,7 +64,7 @@ class Current(webapp2.RequestHandler):
         response = {
                     "temperature":0.0,
                     "humidity":0.0,
-                    "date":"2014-09-26 12:34:56"
+                    "date":"2014-09-26T12:34:56"
                 }
 
         if len(records) == 1:
@@ -72,7 +72,7 @@ class Current(webapp2.RequestHandler):
 
             response["temperature"] = record.temperature
             response["humidity"] = record.humidity
-            response["date"] = record.date.isoformat(' ').split(".")[0]
+            response["date"] = record.date.isoformat(" ").split(".")[0]
 
         self.response.headers["Access-Control-Allow-Origin"] = "*"
         self.response.headers["Content-Type"] = "application/json"
@@ -93,7 +93,7 @@ class Thermometer(webapp2.RequestHandler):
                 this record is recorded by which device.
     """
     def get(self):
-        limit = int(self.request.get('limit',30))
+        limit = int(self.request.get('limit',60))
 
         if limit < 1:
             self.abort(403)
@@ -105,7 +105,7 @@ class Thermometer(webapp2.RequestHandler):
             response.append({
                 "temperature":record.temperature,
                 "humidity":record.humidity,
-                "date" : record.date.isoformat(' ').split(".")[0]
+                "date" : record.date.isoformat().split(".")[0]
                 })
 
         response.reverse()

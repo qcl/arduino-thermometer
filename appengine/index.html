@@ -107,12 +107,11 @@ $(function(){
             
                 for(var i=0;i<records.length;i++){
                     var record = records[i];
-                    var time = Date.parse(record.date) + 8*60*60*1000;
+                    var time = Date.parse(record.date.replace(" ","T")) + 8*60*60*1000;
                     tempData.push([time,record.temperature]);
                     humiData.push([time,record.humidity]);
                 }
           
-                console.log($c);
                 $c.highcharts({
                     chart:{type:"spline"},
                     title:{text:"Temperature & Humidity"},
