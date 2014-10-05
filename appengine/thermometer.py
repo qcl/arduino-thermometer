@@ -22,6 +22,10 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 #   Models
 #
 
+class APIKey(ndb.Model):
+    """API Keys, some API need it to prevent over quota."""
+    key = ndb.StringProperty()
+
 class DHTRecord(ndb.Model):
     """Record the `temperature' and `humidity' in `date'
         temperature : float
@@ -81,10 +85,16 @@ class Current(webapp2.RequestHandler):
 class Thermometer(webapp2.RequestHandler):
     """Get or update DHTRecords (temperature/humidity/date)    
         GET 
-            limit   (default=30)
+            limit   (optional, default=30, max=1000)
                 the number of returned records
+            start   (optional)  [TODO]
+                the start time of DHT records, format is YYYY-MM-DDTHH:MM:SS
+            end     (optional)  [TODO]
+                the end time of DHT records, format is YYYY-MM-DDTHH:MM:SS
 
         POST
+            key     (required)
+                API Key
             temp    (required)
                 temperature
             humi    (required)
@@ -93,9 +103,10 @@ class Thermometer(webapp2.RequestHandler):
                 this record is recorded by which device.
     """
     def get(self):
+        # TODO - query by date range
         limit = int(self.request.get('limit',60))
 
-        if limit < 1:
+        if limit < 1 or limit > 1000:
             self.abort(403)
         
         records = DHTRecord.query().order(-DHTRecord.date).fetch(limit)
@@ -115,13 +126,19 @@ class Thermometer(webapp2.RequestHandler):
         self.response.write(json.dumps(response))
 
     def post(self):
+        key  = self.request.get('key')
         temp = self.request.get('temp')
         humi = self.request.get('humi')
         device = self.request.get('device')
 
-        if len(temp) == 0 or len(humi) == 0 or len(device) == 0:
+        if len(key) == 0 or len(temp) == 0 or len(humi) == 0 or len(device) == 0:
             self.abort(403)
-        
+
+        # Check API Key 
+        apiKey = APIKey.query(APIKey.key == key).fetch(1)
+        if len(apiKey) == 0:
+            self.abort(403)
+
         toCST = timedelta(hours=8)
 
         temp = float(temp)
@@ -130,9 +147,8 @@ class Thermometer(webapp2.RequestHandler):
         dht = DHTRecord(temperature=temp, humidity=humi,date=datetime.now()+toCST)
         dht.put()
 
-        self.response.write(temp)
-        self.response.write(humi)
-        self.response.write(device)
+        self.response.headers["Content-Type"] = "application/json"
+        self.response.write(json.dumps({"success":True,"data":{"humidity":humi,"temperature":temp,"device":device,"key":key}}))
 
 #
 #   Google AppEngine webapp2 Application
