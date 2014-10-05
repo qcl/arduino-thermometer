@@ -107,7 +107,10 @@ $(function(){
             
                 for(var i=0;i<records.length;i++){
                     var record = records[i];
-                    var time = Date.parse(record.date.replace(" ","T")) + 8*60*60*1000;
+                    //Those records in database is stored in CST(+8) time,
+                    //no need to change to local time, so add +0 to prevent
+                    //the browser changing the time.
+                    var time = Date.parse(record.date+"+00:00");
                     tempData.push([time,record.temperature]);
                     humiData.push([time,record.humidity]);
                 }
