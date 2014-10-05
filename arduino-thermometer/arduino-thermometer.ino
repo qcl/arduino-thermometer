@@ -1,7 +1,7 @@
 /*
  *  QCL's Arduino Thermometer
  *
- *  2014.09.26
+ *  2014.10.05
  *  Qing-Cheng Li <qc.linux at gmail.com>
  * 
  *  It's a Arduino test, use sensor and network module, 
@@ -13,12 +13,13 @@
  *  Module
  *      -   TODO/FIXME
  *  Library
- *      - DHT
- *      - TODO/FIXME
+ *      - DHTlib
+ *      - ehtercard
  * */
 
 #include <dht.h>
 #include <EtherCard.h>
+#include "apiKey.h"
 
 /*  Network setting  */
 static byte mac_address[] = {0x74,0x69,0x69,0x2D,0x30,0x31};
@@ -87,7 +88,9 @@ static void postDataToRemoteServer(){
     Serial.println("prepare to send data to remote server...");
     byte sd = stash.create();
 
-    stash.print("temp=");
+    stash.print("key=");
+    stash.print(qclGAEapiKey);
+    stash.print("&temp=");
     stash.print(DHT.temperature);
     stash.print("&humi=");
     stash.print(DHT.humidity);
@@ -113,7 +116,7 @@ static void postDataToRemoteServer(){
  *  setup
  * */
 void setup(){
-    
+
     //Setup serial
     Serial.begin(57600);
     Serial.println("qcl's naive weather center start init.");
